@@ -1,0 +1,13 @@
+CREATE DATABASE IF NOT EXISTS training_institute_finder CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE training_institute_finder;
+CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(120) NOT NULL,email VARCHAR(190) NOT NULL UNIQUE,mobile VARCHAR(30),password_hash VARCHAR(255) NOT NULL,role ENUM('user','admin') NOT NULL DEFAULT 'user',created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS institutes (id INT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(180) NOT NULL,city ENUM('Kakinada','Visakhapatnam') NOT NULL,address TEXT NOT NULL,phone VARCHAR(40),email VARCHAR(190),website VARCHAR(500),image VARCHAR(1000),description TEXT,latitude DECIMAL(10,7),longitude DECIMAL(10,7),rating DECIMAL(2,1) DEFAULT 0,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS courses (id INT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(100) UNIQUE NOT NULL);
+CREATE TABLE IF NOT EXISTS institute_courses (institute_id INT NOT NULL,course_id INT NOT NULL,PRIMARY KEY(institute_id,course_id),FOREIGN KEY(institute_id) REFERENCES institutes(id) ON DELETE CASCADE,FOREIGN KEY(course_id) REFERENCES courses(id) ON DELETE CASCADE);
+CREATE TABLE IF NOT EXISTS favorites (user_id INT NOT NULL,institute_id INT NOT NULL,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(user_id,institute_id),FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,FOREIGN KEY(institute_id) REFERENCES institutes(id) ON DELETE CASCADE);
+INSERT IGNORE INTO courses(name) VALUES ('AWS'),('Cloud Computing'),('DevOps'),('Java'),('Python'),('Full Stack Development'),('Digital Marketing'),('Cyber Security'),('Data Science'),('Testing'),('SQL'),('Web Designing');
+INSERT IGNORE INTO institutes(name,city,address,phone,email,website,image,description,latitude,longitude,rating) VALUES
+('Agasthya Solutions Institute','Kakinada','Jagannaickpur, Kakinada, Andhra Pradesh','','','','','Training and placement-focused institute offering technical and career skills.',16.9891,82.2475,4.5),
+('Example Tech Academy','Visakhapatnam','Dwaraka Nagar, Visakhapatnam, Andhra Pradesh','','','','','Sample institute record. Replace with verified local institute information before publishing.',17.7231,83.3012,4.2);
+INSERT IGNORE INTO institute_courses(institute_id,course_id) SELECT i.id,c.id FROM institutes i JOIN courses c ON c.name IN ('AWS','Cloud Computing','DevOps') WHERE i.name='Agasthya Solutions Institute';
+INSERT IGNORE INTO institute_courses(institute_id,course_id) SELECT i.id,c.id FROM institutes i JOIN courses c ON c.name IN ('Java','Python','Full Stack Development') WHERE i.name='Example Tech Academy';
